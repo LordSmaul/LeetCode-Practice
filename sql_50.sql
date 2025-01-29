@@ -76,7 +76,7 @@ WHERE b.bonus < 1000 OR b.bonus IS NULL;
 SELECT st.student_id, st.student_name, su.subject_name, COUNT(e.student_id) AS attended_exams 
 FROM Students st 
 JOIN Subjects su 
-LEFT JOIN Examinations e ON st.student_id = e.student_id AND subject_name = e.subject_name 
+LEFT JOIN Examinations e ON st.student_id = e.student_id AND su.subject_name = e.subject_name 
 GROUP BY st.student_id, su.subject_name ORDER BY st.student_id, su.subject_name;
 
 -- 570: Managers with at Least 5 Direct Reports
@@ -250,19 +250,19 @@ WHERE l1.id = l2.id - 1 AND l2.id = l3.id-1 AND l1.num = l2.num AND l2.num = l3.
 
 -- 1164: Product Price at a Given Date
 -- https://leetcode.com/problems/product-price-at-a-given-date/
-SELECT product_id, 10 AS price 
+(SELECT product_id, 10 AS price 
 FROM Products 
 GROUP BY product_id 
-HAVING MIN(change_date) > '2019-08-16' 
+HAVING MIN(change_date) > '2019-08-16' )
 UNION ALL
-SELECT product_id, new_price AS price 
+(SELECT product_id, new_price AS price 
 FROM Products 
 WHERE (product_id, change_date) IN (
     SELECT product_id, MAX(change_date) 
     FROM Products 
     WHERE change_date <= '2019-08-16' 
     GROUP BY product_id
-);
+));
 
 -- 1204: Last Person to Fit in the Bus
 -- https://leetcode.com/problems/last-person-to-fit-in-the-bus/
@@ -305,12 +305,14 @@ ORDER BY employee_id;
 -- 1341: Movie Rating
 -- https://leetcode.com/problems/movie-rating/
 (SELECT u.name AS results 
-FROM MovieRating mr JOIN Users u ON u.user_id = mr.user_id 
+FROM MovieRating mr 
+JOIN Users u ON u.user_id = mr.user_id 
 GROUP BY u.name 
 ORDER BY COUNT(*) DESC, u.name LIMIT 1)
 UNION ALL
 (SELECT title AS results 
-FROM MovieRating mr JOIN Movies m ON m.movie_id = mr.movie_id 
+FROM MovieRating mr 
+JOIN Movies m ON m.movie_id = mr.movie_id 
 WHERE DATE_FORMAT(mr.created_at, '%Y-%m') = '2020-02' 
 GROUP BY m.title 
 ORDER BY AVG(mr.rating) DESC, m.title LIMIT 1);
