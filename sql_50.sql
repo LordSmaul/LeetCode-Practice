@@ -99,7 +99,7 @@ GROUP BY user_id;
 SELECT * 
 FROM Cinema 
 WHERE id % 2 != 0 AND description != 'boring'
-ORDER BY id DESC;
+ORDER BY rating DESC;
 
 -- 1251: Average Selling Price 
 -- https://leetcode.com/problems/average-selling-price/
