@@ -300,7 +300,14 @@ WHERE salary < 30000 AND manager_id NOT IN (
 ORDER BY employee_id;
 
 -- 626: Exchange Seats
---
+-- https://leetcode.com/problems/exchange-seats/
+SELECT id, CASE
+WHEN id % 2 = 1 AND id + 1 <= (SELECT MAX(id) FROM Seat) THEN (SELECT student FROM Seat WHERE id = s.id + 1)
+WHEN id % 2 = 0 THEN (SELECT student FROM Seat WHERE id = s.id - 1) 
+ELSE student 
+END AS student 
+FROM Seat s 
+ORDER BY id;
 
 -- 1341: Movie Rating
 -- https://leetcode.com/problems/movie-rating/
@@ -321,7 +328,13 @@ ORDER BY AVG(mr.rating) DESC, m.title LIMIT 1);
 --
 
 -- 602: Friend Requests II: Who Has the Most Friends
---
+-- https://leetcode.com/problems/friend-requests-ii-who-has-the-most-friends/
+SELECT id, COUNT(id) AS num FROM 
+(SELECT requester_id AS id FROM RequestAccepted 
+UNION ALL 
+SELECT accepter_id AS id FROM RequestAccepted) r1
+GROUP BY id
+ORDER BY num DESC LIMIT 1;
 
 -- 585: Investments in 2016
 --
