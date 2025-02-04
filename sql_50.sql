@@ -325,7 +325,20 @@ GROUP BY m.title
 ORDER BY AVG(mr.rating) DESC, m.title LIMIT 1);
 
 -- 1321: Restaurant Growth
---
+-- https://leetcode.com/problems/restaurant-growth/
+SELECT c1.visited_on, sum(c1.amount) AS amount, round(sum(c1.amount) / 7, 2) AS average_amount
+FROM (
+    SELECT visited_on, sum(amount) AS amount 
+    FROM customer
+    GROUP BY visited_on) c1,
+     (
+        SELECT visited_on, sum(amount) AS amount 
+        FROM customer 
+        GROUP BY visited_on) c2
+WHERE c2.visited_on BETWEEN Date_sub(c1.visited_on , INTERVAL 6 DAY) AND c1.visited_on 
+GROUP BY c2.visited_on
+HAVING count(*) = 7
+ORDER BY c2.visited_on;
 
 -- 602: Friend Requests II: Who Has the Most Friends
 -- https://leetcode.com/problems/friend-requests-ii-who-has-the-most-friends/
@@ -337,10 +350,31 @@ GROUP BY id
 ORDER BY num DESC LIMIT 1;
 
 -- 585: Investments in 2016
---
+-- https://leetcode.com/problems/investments-in-2016/
+SELECT ROUND(SUM(tiv_2016), 2) AS tiv_2016
+FROM Insurance 
+WHERE tiv_2015 IN (
+    SELECT tiv_2015 
+    FROM Insurance 
+    GROUP BY tiv_2015 
+    HAVING COUNT(*) > 1
+    )
+AND (lat, lon) IN (
+    SELECT lat, lon 
+    FROM Insurance 
+    GROUP BY lat, lon 
+    HAVING COUNT(*) = 1
+);  
 
 -- 185: Department Top Three Salaries
---
+-- https://leetcode.com/problems/department-top-three-salaries/
+SELECT d.name AS Department, e.name AS Employee, e.salary AS Salary 
+FROM Employee e JOIN Department d ON e.departmentId = d.id 
+WHERE (
+    SELECT COUNT(DISTINCT salary)
+    FROM Employee e2
+    WHERE e2.departmentId = e.departmentID AND e2.salary >= e.salary
+    ) <= 3;
 
 -- 1667: Fix Names in a Table
 -- https://leetcode.com/problems/fix-names-in-a-table/
